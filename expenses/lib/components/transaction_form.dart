@@ -63,7 +63,7 @@ class _TransactionFormState extends State<TransactionForm> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               onSubmitted: (_) => _submitForm(),
               decoration: InputDecoration(
-                labelText: 'Valor (R\$)',
+                labelText: 'Valor (R\$) ',
               ),
             ),
             Container(
