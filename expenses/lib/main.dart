@@ -90,9 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  _addTransaction(String title, double value, DateTime date) {
+  _addTransaction(String categoria, String title, double value, DateTime date) {// String categoria adicinada
     final newTransaction = Transaction(
       Random().nextDouble().toString(),
+      categoria, // Linha adicionada
       title,
       value,
       date,

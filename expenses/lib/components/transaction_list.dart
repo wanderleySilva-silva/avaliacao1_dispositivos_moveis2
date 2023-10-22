@@ -52,9 +52,18 @@ class TransactionList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    title: Text(
-                      tr.title,
-                      style: Theme.of(context).textTheme.headline6,
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Título: " + tr.title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          "Categoria: " + tr.category,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
                     ),
                     subtitle: Text(
                       DateFormat('d MMM yyy').format(tr.date),
@@ -62,7 +71,7 @@ class TransactionList extends StatelessWidget {
                     trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () => onRemove(tr.id),
-                        color: Theme.of(context).errorColor),
+                        color: Theme.of(context).colorScheme.error),
                   ),
                 );
               },

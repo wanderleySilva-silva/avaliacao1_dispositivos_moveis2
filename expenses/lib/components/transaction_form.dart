@@ -1,9 +1,11 @@
+import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransactionForm extends StatefulWidget {
-  final void Function(String, double, DateTime) onSubmit;
+  final void Function(String, String, double, DateTime)
+      onSubmit; // String adicionada
 
   TransactionForm(this.onSubmit);
 
@@ -12,18 +14,22 @@ class TransactionForm extends StatefulWidget {
 }
 
 class _TransactionFormState extends State<TransactionForm> {
+  final _formKey = GlobalKey<FormState>(); // Linha adicionada
+  final _categoryController = TextEditingController(); // Linha adicionada
   final _titleController = TextEditingController();
   final _valueController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  String _selectedCategory = "";
+  List<String> _categoryList = ['Entretenimento','Alimentação','Saúde','Outros'];
 
   _submitForm() {
-    final title = _titleController.text;
-    final value = double.tryParse(_valueController.text) ?? 0.0;
-
-    if (title.isEmpty || value <= 0 || _selectedDate == null) {
-      return;
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      final category = _categoryController.text; // Linha adicionada
+      final title = _titleController.text;
+      final value = double.tryParse(_valueController.text) ?? 0.0;
+      widget.onSubmit(
+          _selectedCategory, title, value, _selectedDate); // categoria adicionada
     }
-    widget.onSubmit(title, value, _selectedDate);
   }
 
   //Mostrar seletor de datas
@@ -49,60 +55,101 @@ class _TransactionFormState extends State<TransactionForm> {
       elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              onSubmitted: (_) => _submitForm(),
-              decoration: InputDecoration(
-                labelText: 'Título',
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedCategory.isEmpty ? null : _selectedCategory,
+                items: _categoryList.map((category) {
+                  return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedCategory = value ?? '';
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Categoria',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, escolha uma categoria';
+                  }
+                  return null;
+                },
               ),
-            ),
-            TextField(
-              controller: _valueController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => _submitForm(),
-              decoration: InputDecoration(
-                labelText: 'Valor (R\$) ',
+              TextFormField(
+                controller: _titleController,
+                onFieldSubmitted: (_) => _submitForm(),
+                decoration: InputDecoration(
+                  labelText: 'Título',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Por favor, preencha o título';
+                  }
+                  return null;
+                },
               ),
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedDate == null
-                          ? 'Nenhuma data selecionada!'
-                          : 'Data selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}',
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _showDatePicker,
-                    child: Text(
-                      'Selecionar data!',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
+              TextFormField(
+                controller: _valueController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                onFieldSubmitted: (_) => _submitForm(),
+                decoration: InputDecoration(
+                  labelText: 'Valor (R\$)',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Por favor, preencha o valor';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Digite um valor numérico válido';
+                  }
+                  return null;
+                },
+              ),
+              Container(
+                height: 70,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedDate == null
+                            ? 'Nenhuma data selecionada!'
+                            : 'Data selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}',
                       ),
+                    ),
+                    TextButton(
+                      onPressed: _showDatePicker,
+                      child: Text(
+                        'Selecionar data!',
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    child: Text(
+                      'Adicionar transação',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text(
-                    'Adicionar transação',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
