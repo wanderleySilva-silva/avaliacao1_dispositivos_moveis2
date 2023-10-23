@@ -3,6 +3,7 @@
 import 'package:expenses/components/chart.dart';
 import 'package:expenses/components/transaction_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:math';
 import './components/transaction_list.dart';
 import 'models/transaction.dart';
@@ -14,6 +15,7 @@ class ExpensesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: StartPage(),
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'Quicksand',
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -134,14 +136,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return MaterialApp(
       theme: theme,
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.purple,
           title: Text('Minhas Despesas'),
-          actions: [
-            IconButton(
-                onPressed: () => _openTransactionFormModal(context),
-                icon: Icon(Icons.add))
-          ],
         ),
         drawer: Drawer(
           child: ListView(
