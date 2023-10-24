@@ -18,17 +18,27 @@ class _TransactionFormState extends State<TransactionForm> {
   final _categoryController = TextEditingController(); // Linha adicionada
   final _titleController = TextEditingController();
   final _valueController = TextEditingController();
+
+
   DateTime _selectedDate = DateTime.now();
   String _selectedCategory = "";
-  List<String> _categoryList = ['Entretenimento','Alimentação','Saúde','Outros'];
+  String _selectedPayment = "";
+
+
+  List<String> _categoryList = [
+    'Entretenimento',
+    'Alimentação',
+    'Saúde',
+    'Outros'
+  ];
 
   _submitForm() {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       final category = _categoryController.text; // Linha adicionada
       final title = _titleController.text;
       final value = double.tryParse(_valueController.text) ?? 0.0;
-      widget.onSubmit(
-          _selectedCategory, title, value, _selectedDate); // categoria adicionada
+      widget.onSubmit(_selectedCategory, title, value,
+          _selectedDate); // categoria adicionada
     }
   }
 
@@ -63,9 +73,9 @@ class _TransactionFormState extends State<TransactionForm> {
                 value: _selectedCategory.isEmpty ? null : _selectedCategory,
                 items: _categoryList.map((category) {
                   return DropdownMenuItem<String>(
-                        value: category,
-                        child: Text(category),
-                      );
+                    value: category,
+                    child: Text(category),
+                  );
                 }).toList(),
                 onChanged: (String? value) {
                   setState(() {
@@ -111,6 +121,41 @@ class _TransactionFormState extends State<TransactionForm> {
                   }
                   return null;
                 },
+              ),
+              Text('Opção de Pagamento:'),
+              Row(
+                children: <Widget>[
+                  Radio<String>(
+                    value: 'Cartão de Crédito',
+                    groupValue: _selectedPayment,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedPayment = value!;
+                      });
+                    },
+                  ),
+                  Text('Cartão de Crédito'),
+                  Radio<String>(
+                    value: 'PIX',
+                    groupValue: _selectedPayment,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedPayment = value!;
+                      });
+                    },
+                  ),
+                  Text('PIX'),
+                  Radio<String>(
+                    value: 'Dinheiro em espécie',
+                    groupValue: _selectedPayment,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedPayment = value!;
+                      });
+                    },
+                  ),
+                  Text('Dinheiro em espécie'),
+                ],
               ),
               Container(
                 height: 70,

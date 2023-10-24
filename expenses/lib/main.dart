@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // String categoria adicinada
     final newTransaction = Transaction(
       Random().nextDouble().toString(),
-      categoria, // Linha adicionada
+      categoria,// Linha adicionada
       title,
       value,
       date,
