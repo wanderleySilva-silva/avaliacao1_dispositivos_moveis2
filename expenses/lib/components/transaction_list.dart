@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:expenses/components/chart_bar.dart';
 import 'package:expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
   final void Function(String) onRemove;
+  
 
   TransactionList(this.transactions, this.onRemove);
 
@@ -61,6 +63,10 @@ class TransactionList extends StatelessWidget {
                         ),
                         Text(
                           "Categoria: " + tr.category,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Text(
+                          "Forma de pagamento: " + tr.payment,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ],

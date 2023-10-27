@@ -64,18 +64,22 @@ class StartPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Bem-vindo'),
       ),
-      body: Center(child: Builder(builder: (BuildContext newContext) {
-        return ElevatedButton(
-          onPressed: () {
-            Navigator.of(newContext).push(
-              MaterialPageRoute(
-                builder: (context) => MyHomePage(),
-              ),
+      body: Center(
+        child: Builder(
+          builder: (BuildContext newContext) {
+            return ElevatedButton(
+              onPressed: () {
+                Navigator.of(newContext).push(
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ),
+                );
+              },
+              child: Text('Cadastrar transações'),
             );
           },
-          child: Text('Cadastrar transações'),
-        );
-      })),
+        ),
+      ),
     );
   }
 }
@@ -87,6 +91,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isDarkMode = false; // Linha adicionada
+  bool checkBoxValue = false;
 
   final List<Transaction> _transactions = [];
 
@@ -98,13 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  _addTransaction(String categoria, String title, double value, DateTime date) {
+  _addTransaction(String categoria, String title, double value, String payment,
+      DateTime date) {
     // String categoria adicinada
     final newTransaction = Transaction(
       Random().nextDouble().toString(),
-      categoria,// Linha adicionada
+      categoria, // Linha adicionada
       title,
       value,
+      payment,
       date,
     );
 
@@ -178,14 +185,26 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Linha adicionada
                         isDarkMode = value; // Linha adicionada
                       }); // Linha adicionada
-                    }), //// Linha adicionada
+                    })
+
+                /// Linha adicionada
               ]),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => _openTransactionFormModal(context),
+          onPressed: checkBoxValue ? () => _openTransactionFormModal(context) : null,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        bottomNavigationBar: BottomAppBar(
+          child: CheckboxListTile(
+            title: Text('Ativar/desativar botão'),
+            value: checkBoxValue,
+            onChanged: (value){
+              setState(() {
+                checkBoxValue = value!;
+              });
+            },
+          )),
       ),
     );
   }

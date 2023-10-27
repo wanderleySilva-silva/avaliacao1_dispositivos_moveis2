@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransactionForm extends StatefulWidget {
-  final void Function(String, String, double, DateTime)
+  final void Function(String, String, double, String, DateTime)
       onSubmit; // String adicionada
 
   TransactionForm(this.onSubmit);
@@ -15,15 +15,16 @@ class TransactionForm extends StatefulWidget {
 
 class _TransactionFormState extends State<TransactionForm> {
   final _formKey = GlobalKey<FormState>(); // Linha adicionada
-  final _categoryController = TextEditingController(); // Linha adicionada
   final _titleController = TextEditingController();
   final _valueController = TextEditingController();
-
 
   DateTime _selectedDate = DateTime.now();
   String _selectedCategory = "";
   String _selectedPayment = "";
 
+  bool checkBoxValue1 = false;
+  bool checkBoxValue2 = false;
+  TextEditingController textEditingController = TextEditingController();
 
   List<String> _categoryList = [
     'Entretenimento',
@@ -34,10 +35,9 @@ class _TransactionFormState extends State<TransactionForm> {
 
   _submitForm() {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      final category = _categoryController.text; // Linha adicionada
       final title = _titleController.text;
       final value = double.tryParse(_valueController.text) ?? 0.0;
-      widget.onSubmit(_selectedCategory, title, value,
+      widget.onSubmit(_selectedCategory, title, value, _selectedPayment,
           _selectedDate); // categoria adicionada
     }
   }
@@ -155,6 +155,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     },
                   ),
                   Text('Dinheiro em espécie'),
+                  
                 ],
               ),
               Container(
