@@ -2,13 +2,20 @@
 
 import 'package:expenses/components/chart.dart';
 import 'package:expenses/components/transaction_form.dart';
+import 'package:expenses/database/db.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+//import 'package:flutter/rendering.dart';
 import 'dart:math';
 import './components/transaction_list.dart';
 import 'models/transaction.dart';
 
-main() => runApp(ExpensesApp());
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await DatabaseHelper().initDatabase();
+
+  runApp(ExpensesApp());
+}
 
 class ExpensesApp extends StatelessWidget {
   @override
@@ -93,9 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isDarkMode = false; // Linha adicionada
   bool checkBoxValue = false;
 
-  final List<Transaction> _transactions = [];
+  final List<Transacao> _transactions = [];
 
-  List<Transaction> get _recentTransactions {
+  List<Transacao> get _recentTransactions {
     return _transactions.where((tr) {
       return tr.date.isAfter(DateTime.now().subtract(
         Duration(days: 7),
@@ -106,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _addTransaction(String categoria, String title, double value, String payment,
       DateTime date) {
     // String categoria adicinada
-    final newTransaction = Transaction(
+    final newTransaction = Transacao(
       Random().nextDouble().toString(),
       categoria, // Linha adicionada
       title,
