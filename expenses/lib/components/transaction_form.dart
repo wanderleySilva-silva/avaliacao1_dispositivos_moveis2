@@ -27,7 +27,7 @@ class _TransactionFormState extends State<TransactionForm> {
   bool checkBoxValue2 = false;
   TextEditingController textEditingController = TextEditingController();
 
-  List<String> _categoryList = [
+  final List<String> _categoryList = [
     'Entretenimento',
     'Alimentação',
     'Saúde',

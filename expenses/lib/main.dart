@@ -3,16 +3,20 @@
 import 'package:expenses/components/chart.dart';
 import 'package:expenses/components/transaction_form.dart';
 import 'package:expenses/database/db.dart';
+import 'package:expenses/database/firebase/firebase_db.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter/rendering.dart';
-import 'dart:math';
+import 'dart:math' hide log;
+import 'dart:developer';
 import './components/transaction_list.dart';
 import 'models/transaction.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await DatabaseHelper().initDatabase();
+  await Future.wait([
+    DatabaseHelper.init(),
+    FirebaseFirestoreTransactionsRepository.init(),
+  ]);
 
   runApp(ExpensesApp());
 }
@@ -100,6 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isDarkMode = false; // Linha adicionada
   bool checkBoxValue = false;
 
+  final transactionsFirestoreRepository =
+      FirebaseFirestoreTransactionsRepository.instance;
+  
+  final transactionsSqliteRepository = DatabaseHelper.instance;
+
   final List<Transacao> _transactions = [];
 
   List<Transacao> get _recentTransactions {
@@ -110,17 +119,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  _addTransaction(String categoria, String title, double value, String payment,
-      DateTime date) {
+  Future<void> _addTransaction(String categoria, String title, double value,
+      String payment, DateTime date) async {
+    String id = Random().nextInt(1000000).toString();
+    while (_transactions.any((element) => element.id == id)) {
+      id = Random().nextInt(1000000).toString();
+    }
     // String categoria adicinada
     final newTransaction = Transacao(
-      Random().nextDouble().toString(),
-      categoria, // Linha adicionada
-      title,
-      value,
-      payment,
-      date,
+      id: id,
+      category: categoria, // Linha adicionada
+      title: title,
+      value: value,
+      payment: payment,
+      date: date,
     );
+
+    await transactionsFirestoreRepository.save(newTransaction);
+    await transactionsSqliteRepository.insertTransaction(newTransaction);
 
     setState(() {
       _transactions.add(newTransaction);
@@ -129,18 +145,32 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
-  _removeTransaciton(String id) {
+  Future<void> _removeTransaciton(String id) async {
+    await transactionsFirestoreRepository.delete(id);
     setState(() {
       _transactions.removeWhere((tr) => tr.id == id);
     });
   }
 
-  _openTransactionFormModal(BuildContext context) {
+  void _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (_) {
           return TransactionForm(_addTransaction);
         });
+  }
+
+  Future<List<Transacao>> _getTransactions() async {
+    if (_transactions.isNotEmpty) return _transactions;
+
+    final transacations =
+        await transactionsFirestoreRepository.getTransactions();
+
+    setState(() {
+      _transactions.addAll(transacations);
+    });
+
+    return transacations;
   }
 
   @override
@@ -183,35 +213,35 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Chart(_recentTransactions),
-                TransactionList(_transactions, _removeTransaciton),
+                TransactionList(_removeTransaciton, _getTransactions),
                 Switch(
-                    value: isDarkMode, // Linha adicionada
-                    onChanged: (value) {
-                      // Linha adicionada
-                      setState(() {
-                        // Linha adicionada
-                        isDarkMode = value; // Linha adicionada
-                      }); // Linha adicionada
-                    })
-
-                /// Linha adicionada
+                  value: isDarkMode,
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        isDarkMode = value;
+                      },
+                    );
+                  },
+                )
               ]),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: checkBoxValue ? () => _openTransactionFormModal(context) : null,
+          onPressed:
+              checkBoxValue ? () => _openTransactionFormModal(context) : null,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: BottomAppBar(
-          child: CheckboxListTile(
-            title: Text('Ativar/desativar botão'),
-            value: checkBoxValue,
-            onChanged: (value){
-              setState(() {
-                checkBoxValue = value!;
-              });
-            },
-          )),
+            child: CheckboxListTile(
+          title: Text('Ativar/desativar botão'),
+          value: checkBoxValue,
+          onChanged: (value) {
+            setState(() {
+              checkBoxValue = value!;
+            });
+          },
+        )),
       ),
     );
   }

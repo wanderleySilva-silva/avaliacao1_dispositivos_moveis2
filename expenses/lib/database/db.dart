@@ -1,32 +1,71 @@
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'package:path/path.dart';
 import 'package:expenses/models/transaction.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 class DatabaseHelper {
-  static Database? _database;
+  static DatabaseHelper? _instance;
+  final Database _database;
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
+  const DatabaseHelper._internal(this._database);
 
-    _database = await initDatabase();
-    return _database!;
+  static Future<void> init() async {
+
+    if (_instance != null) return;
+
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+    final path = join(documentsDirectory.path, 'transactions.db');
+    final database = await openDatabase(
+      path,
+      version: 1,
+      onOpen: (db) {},
+      onCreate: (Database db, int version) async {
+        await db.execute('CREATE TABLE transactions('
+            'id TEXT PRIMARY KEY,'
+            'category TEXT,'
+            'title TEXT,'
+            'value REAL,'
+            'payment TEXT,'
+            'date TEXT'
+            ')');
+
+      },
+    );
+    _instance ??= DatabaseHelper._internal(database);
   }
 
-  Future<Database> initDatabase() async {
-    
-    final caminho = await path_provider.getApplicationCacheDirectory();
-    log(caminho.path);
-    
-    String path = join(caminho.path, 'transactions.db');
-
-    return await openDatabase(path, version: 1, onCreate: _createDatabase);
+  static DatabaseHelper get instance {
+    assert(_instance != null);
+    return _instance!;
   }
 
-  Future<void> _createDatabase(Database db, int version) async {
+  // static Future<DatabaseHelper?> get database async {
+  //   if (_instance != null) return _instance;
+
+  //   Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+  //   final path = join(documentsDirectory.path, 'transactions.db');
+
+  //   final database = await openDatabase(path, version: 1, onOpen: (db){},
+  //   onCreate: (Database db, int version) async {
+  //     await db.execute('CREATE TABLE transactions('
+  //       'id TEXT PRIMARY KEY,'
+  //       'category TEXT,'
+  //       'title TEXT,'
+  //       'value REAL,'
+  //       'payment TEXT,'
+  //       'date TEXT'
+  //       ')');
+  //   });
+
+  //   return _instance ??= DatabaseHelper._internal(database);
+  // }
+
+  /*Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
       CREATE TABLE transactions(
         id TEXT PRIMARY KEY,
@@ -38,30 +77,27 @@ class DatabaseHelper {
       )
     ''');
   }
+  */
 
   Future<void> insertTransaction(Transacao transaction) async {
-    Database db = await database;
-    
-    await db.insert(
+    await _database.insert(
       'transactions',
-      transaction.toMap(),
+      transaction.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
   Future<List<Transacao>> getTransactions() async {
-    Database db = await database;
-
-    List<Map<String, dynamic>> maps = await db.query('transactions');
+    List<Map<String, dynamic>> maps = await _database.query('transactions');
 
     return List.generate(maps.length, (i) {
       return Transacao(
-        maps[i]['id'],
-        maps[i]['category'],
-        maps[i]['title'],
-        maps[i]['value'],
-        maps[i]['payment'],
-        DateTime.parse(maps[i]['date']),
+        id: maps[i]['id'],
+        category: maps[i]['category'],
+        title: maps[i]['title'],
+        value: maps[i]['value'],
+        payment: maps[i]['payment'],
+        date: DateTime.parse(maps[i]['date']),
       );
     });
   }

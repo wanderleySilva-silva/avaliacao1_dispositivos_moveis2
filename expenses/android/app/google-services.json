@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864251773970",
+    "project_id": "back-end-api-rest-java",
+    "storage_bucket": "back-end-api-rest-java.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864251773970:android:5f1f9fdf2549e8709a04cb",
+        "android_client_info": {
+          "package_name": "com.example.expenses"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl-f7cRr37s5u-4tHkutSSETZ_XB9iw6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
