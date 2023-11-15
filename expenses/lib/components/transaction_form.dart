@@ -1,4 +1,3 @@
-
 //import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ class TransactionForm extends StatefulWidget {
   final void Function(String, String, double, String, DateTime)
       onSubmit; // String adicionada
 
-  TransactionForm(this.onSubmit);
+  const TransactionForm(this.onSubmit, {Key? key}) : super(key: key);
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -83,7 +82,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     _selectedCategory = value ?? '';
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Categoria',
                 ),
                 validator: (value) {
@@ -96,7 +95,7 @@ class _TransactionFormState extends State<TransactionForm> {
               TextFormField(
                 controller: _titleController,
                 onFieldSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Título',
                 ),
                 validator: (value) {
@@ -108,9 +107,10 @@ class _TransactionFormState extends State<TransactionForm> {
               ),
               TextFormField(
                 controller: _valueController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 onFieldSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Valor (R\$)',
                 ),
                 validator: (value) {
@@ -123,7 +123,7 @@ class _TransactionFormState extends State<TransactionForm> {
                   return null;
                 },
               ),
-              Text('Opção de Pagamento:'),
+              const Text('Opção de Pagamento:'),
               Row(
                 children: <Widget>[
                   Radio<String>(
@@ -135,7 +135,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       });
                     },
                   ),
-                  Text('Cartão de Crédito'),
+                  const Text('Cartão de Crédito'),
                   Radio<String>(
                     value: 'PIX',
                     groupValue: _selectedPayment,
@@ -145,7 +145,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       });
                     },
                   ),
-                  Text('PIX'),
+                  const Text('PIX'),
                   Radio<String>(
                     value: 'Dinheiro em espécie',
                     groupValue: _selectedPayment,
@@ -155,8 +155,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       });
                     },
                   ),
-                  Text('Dinheiro em espécie'),
-                  
+                  const Text('Dinheiro em espécie'),
                 ],
               ),
               Container(
@@ -188,7 +187,7 @@ class _TransactionFormState extends State<TransactionForm> {
                 children: [
                   ElevatedButton(
                     onPressed: _submitForm,
-                    child: Text(
+                    child: const Text(
                       'Adicionar transação',
                       style: TextStyle(color: Colors.white),
                     ),

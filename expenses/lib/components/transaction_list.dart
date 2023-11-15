@@ -1,14 +1,17 @@
 import 'dart:developer';
 
+import 'package:expenses/components/edition_transaction_page.dart';
 import 'package:expenses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
+  final Function editHandler;
   final void Function(String) onRemove;
   final Future<List<Transacao>> Function() getTransactions;
 
   const TransactionList(
+    this.editHandler,
     this.onRemove,
     this.getTransactions, {
     Key? key,
@@ -96,10 +99,29 @@ class TransactionList extends StatelessWidget {
                             subtitle: Text(
                               DateFormat('d MMM yyy').format(tr.date),
                             ),
-                            trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () => onRemove(tr.id),
-                                color: Theme.of(context).colorScheme.error),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditTransactionPage(
+                                                tr, editHandler),
+                                      ),
+                                    );
+                                  },
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () => onRemove(tr.id),
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

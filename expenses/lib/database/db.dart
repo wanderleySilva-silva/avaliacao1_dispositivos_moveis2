@@ -13,7 +13,6 @@ class DatabaseHelper {
   const DatabaseHelper._internal(this._database);
 
   static Future<void> init() async {
-
     if (_instance != null) return;
 
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -32,7 +31,6 @@ class DatabaseHelper {
             'payment TEXT,'
             'date TEXT'
             ')');
-
       },
     );
     _instance ??= DatabaseHelper._internal(database);
@@ -42,42 +40,6 @@ class DatabaseHelper {
     assert(_instance != null);
     return _instance!;
   }
-
-  // static Future<DatabaseHelper?> get database async {
-  //   if (_instance != null) return _instance;
-
-  //   Directory documentsDirectory = await getApplicationDocumentsDirectory();
-
-  //   final path = join(documentsDirectory.path, 'transactions.db');
-
-  //   final database = await openDatabase(path, version: 1, onOpen: (db){},
-  //   onCreate: (Database db, int version) async {
-  //     await db.execute('CREATE TABLE transactions('
-  //       'id TEXT PRIMARY KEY,'
-  //       'category TEXT,'
-  //       'title TEXT,'
-  //       'value REAL,'
-  //       'payment TEXT,'
-  //       'date TEXT'
-  //       ')');
-  //   });
-
-  //   return _instance ??= DatabaseHelper._internal(database);
-  // }
-
-  /*Future<void> _createDatabase(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE transactions(
-        id TEXT PRIMARY KEY,
-        category TEXT,
-        title TEXT,
-        value REAL,
-        payment TEXT,
-        date TEXT
-      )
-    ''');
-  }
-  */
 
   Future<void> insertTransaction(Transacao transaction) async {
     await _database.insert(
