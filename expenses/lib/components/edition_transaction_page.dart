@@ -67,6 +67,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                 initialValue: id,
                 decoration: const InputDecoration(labelText: 'Id'),
                 onSaved: (value) => id = value,
+                enabled: false,
               ),
               TextFormField(
                 initialValue: category,

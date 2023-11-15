@@ -68,20 +68,20 @@ class TransactionList extends StatelessWidget {
                           ),
                           child: ListTile(
                             leading: CircleAvatar(
+                              backgroundColor: Colors.purple,
                               radius: 30,
                               child: Padding(
                                 padding: const EdgeInsets.all(6),
                                 child: FittedBox(
-                                  child: Text('R\$${tr.value}'),
+                                  child: Text('R\$${tr.value}',
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                 ),
                               ),
                             ),
                             title: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Id: " + tr.id,
-                                ),
                                 Text(
                                   "Título: " + tr.title,
                                   style: Theme.of(context).textTheme.titleLarge,
@@ -113,7 +113,7 @@ class TransactionList extends StatelessWidget {
                                       ),
                                     );
                                   },
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: Colors.lightBlue,
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete),
