@@ -126,7 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ListTile(
                 title: const Text('Formulário'),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const MyHomePage(),
+                    ),
+                  );
                 },
               ),
               ListTile(

@@ -5,7 +5,7 @@ class EditTransactionPage extends StatefulWidget {
   final Transacao transaction;
   final Function editHandler;
 
-  EditTransactionPage(this.transaction, this.editHandler);
+  const EditTransactionPage(this.transaction, this.editHandler, {Key? key}) : super(key: key);
 
   @override
   _EditTransactionPageState createState() => _EditTransactionPageState();
